@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 main test file
 """
@@ -8,6 +9,8 @@ import shutil
 import os
 from lib import constants
 from lib.gitobj.gitpr import GitPullRequest
+# from lib.gitobj.constants import site_url
+import lib.gitobj.constants as const
 
 
 def get_workspace_by_pr(url: str, pr_num: int):
@@ -56,6 +59,7 @@ def main():
     """main entrypoint"""
     print("Hello from pullrequest!")
     print(f"{constants.git_url}")
+    print(f"{const.site_url}")
     inc_pr = GitPullRequest(111, "main", "fix-plot-twist2")
     inc_pr.filter = "bloomV3"
     ret_val = inc_pr.clone()
@@ -63,9 +67,9 @@ def main():
     val = GitPullRequest.creep(5, 4)
     print(f"{val=}")
 
-    # Testing
-    url = "https://github.com/PyGithub/PyGithub.git"
-    get_workspace_by_pr(url, 3287)
+    # # Testing
+    # url = "https://github.com/PyGithub/PyGithub.git"
+    # get_workspace_by_pr(url, 3287)
 
 
 if __name__ == "__main__":
