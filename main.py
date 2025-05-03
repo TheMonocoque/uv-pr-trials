@@ -7,6 +7,7 @@ main test file
 import subprocess
 import shutil
 import os
+from functools import partial
 from lib import constants
 from lib.gitobj.gitpr import GitPullRequest
 # from lib.gitobj.constants import site_url
@@ -66,6 +67,14 @@ def main():
     print(f"{ret_val=}")
     val = GitPullRequest.creep(5, 4)
     print(f"{val=}")
+
+    specify_prnum_ghpr: partial = partial(GitPullRequest, base_branch="main", head_branch="mybranch")
+    pr2 = specify_prnum_ghpr(123)
+    pr2.clone()
+
+    specify_prnum_branch_ghpr: partial = partial(GitPullRequest, base_branch="main")
+    pr3 = specify_prnum_branch_ghpr(123, head_branch="food")
+    pr3.clone()
 
     # # Testing
     # url = "https://github.com/PyGithub/PyGithub.git"
