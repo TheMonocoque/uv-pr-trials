@@ -23,4 +23,3 @@ def demo_combo_choice_sample() -> None:
 
     print("\nTwo winners...")
     print("winners=", sample(lister, k=2))
-
