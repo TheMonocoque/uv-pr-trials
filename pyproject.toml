@@ -10,6 +10,11 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "black>=25.1.0",
-    "pylint>=3.3.6",
+    "ruff>=0.11.11",
 ]
+
+[tool.ruff]
+line-length = 130
+
+[tool.ruff.lint]
+select = [ "E", "F", "B", "UP", "SIM", "I"]
