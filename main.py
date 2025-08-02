@@ -7,6 +7,11 @@ main test file
 from functools import partial
 from pathlib import Path
 from contextlib import contextmanager
+from random import choice
+
+from pydantic_settings import BaseSettings
+from dotenv import dotenv_values
+import os
 
 from lib import constants
 from lib.gitobj.gitpr import GitPullRequest
@@ -16,13 +21,23 @@ import lib.mylistr.runstrtimer as rstim
 from lib.eventcache.eventcache import EventCache
 
 
+class Settings(BaseSettings):
+    database_url: str = ""
+    auth_key: str = ""
+    debug: bool = False
+
+    class Config:
+        env_file: str = "settings.env"
+
+
 def produce_synthetic_event_list() -> list[dict]:
     """synthetic event list"""
     cycle: list[dict] = []
-    cycle.append({"name": "Scanning", "time": 50})
+    items_to_select: str = ["apple", "banana", "carrot", "dragonfruit", "elote", "fennel", "grapes"]
+    cycle.append({"name": "Scanning", "time": 50, "fuit": choice(items_to_select)})
     for inject_time in range(60, 199):
-        cycle.append({"name": "ReportGeneration", "time": inject_time})
-    cycle.append({"name": "Finished", "time": 10})
+        cycle.append({"name": "ReportGeneration", "time": inject_time, "fruit": choice(items_to_select)})
+    cycle.append({"name": "Finished", "time": 10, "fruit": choice(items_to_select)})
     print(f"Total synthetic events produced: {len(cycle)}")
     return cycle
 
@@ -59,7 +74,7 @@ def contextrunner():
 
     def acquire_resource(*args, **kwargs):
         print(args, kwargs)
-        return { "message" : args[0], "keys": kwargs}
+        return {"message": args[0], "keys": kwargs}
 
     def release_resource():
         print("Releasing resource")
@@ -81,6 +96,16 @@ def contextrunner():
 def main():
     """main entrypoint"""
     print("Hello from pullrequest!")
+
+    # pydantic much heavier than dotenv
+    settings = Settings()
+    print(f"Database URL: {settings.database_url}")
+    config = {
+        **dotenv_values(".env.shared"),
+        **dotenv_values(".env.secret"),
+        **os.environ,
+    }
+    print(f'Quick config {config["GLOBAL_NAME"]}')
 
     config_test()
     clone_test()
