@@ -3,22 +3,22 @@
 main test file
 """
 
+from pydantic_settings import BaseSettings
+from dotenv import dotenv_values
+import os
+from lib import constants
+
 # import github
 from functools import partial
 from pathlib import Path
 from contextlib import contextmanager
 from random import choice
-
-from pydantic_settings import BaseSettings
-from dotenv import dotenv_values
-import os
-
-from lib import constants
 from lib.gitobj.gitpr import GitPullRequest
 import lib.gitobj.constants as const
 import lib.winners.wincombo as combowin
 import lib.mylistr.runstrtimer as rstim
 from lib.eventcache.eventcache import EventCache
+import lib.mppool.run_pool as mp
 
 
 class Settings(BaseSettings):
@@ -105,7 +105,7 @@ def main():
         **dotenv_values(".env.secret"),
         **os.environ,
     }
-    print(f'Quick config {config["GLOBAL_NAME"]}')
+    print(f"Quick config {config['GLOBAL_NAME']}")
 
     config_test()
     clone_test()
@@ -113,6 +113,13 @@ def main():
 
     combowin.demo_combo_choice_sample()
     rstim.run_loop_test()
+
+    run1: mp.Runnable = mp.NormalRun()
+    run1.run_function(mp.f)
+
+    runner: mp.Runnable = mp.PoolRun()
+    runner.run_function(mp.f)
+    runner.report()
 
     test_event: EventCache = EventCache()
     for event in produce_synthetic_event_list():
