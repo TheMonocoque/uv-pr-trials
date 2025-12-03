@@ -33,7 +33,7 @@ class Settings(BaseSettings):
 def produce_synthetic_event_list() -> list[dict]:
     """synthetic event list"""
     cycle: list[dict] = []
-    items_to_select: str = ["apple", "banana", "carrot", "dragonfruit", "elote", "fennel", "grapes"]
+    items_to_select: list[str] = ["apple", "banana", "carrot", "dragonfruit", "elote", "fennel", "grapes"]
     cycle.append({"name": "Scanning", "time": 50, "fuit": choice(items_to_select)})
     for inject_time in range(60, 199):
         cycle.append({"name": "ReportGeneration", "time": inject_time, "fruit": choice(items_to_select)})
