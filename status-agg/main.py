@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import lib.shared as libshare
+import lib.synthetic_device as sdev
 import lib.message_aggregator as msa
 
 
@@ -13,9 +13,11 @@ def main():
     # agg.severity_level = "critical"
 
     # Run workflow to create synthetic data
-    agg.aggregate(libshare.parse_payload())
-    agg.aggregate(libshare.clone_device())
-    agg.aggregate(libshare.generate_report())
+    devices: list[str] = ["sda", "sdb", "sdc", "sdd"]
+    wf = sdev.SyntheticDevice().add_devices(devices)
+    agg.aggregate(wf.parse_payload())
+    agg.aggregate(wf.clone_device())
+    agg.aggregate(wf.generate_report())
 
     # Display the messages
     agg.print_messages()
