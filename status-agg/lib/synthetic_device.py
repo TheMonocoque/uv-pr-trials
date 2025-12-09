@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import Any, Self
 import uvloop
 import asyncio
+from rich.progress import Progress, TaskID
 
 
 @dataclass
@@ -19,15 +20,18 @@ class SyntheticDevice:
 
         tasklist = []
         for device in self.device_list:
-            task = self.loop.create_task(self.update_storage(device))
+            pbar = self.progress.add_task(f"Processing {device}...", total=100)
+            task = self.loop.create_task(self.update_storage(device, pbar))
             tasklist.append(task)
+
         await asyncio.gather(*tasklist)
 
-    async def update_storage(self, id: str = "default") -> None:
+    async def update_storage(self, id: str, pbar: TaskID) -> None:
         """long running process"""
         for tdelay in range(10):
-            print(f"Updating storage[{id}] on device - {tdelay}")
-            await asyncio.sleep(random.randrange(1, 5))
+            while not self.progress.finished:
+                self.progress.update(pbar, advance=10)
+                await asyncio.sleep(random.randrange(1, 5))
         print(f"Finished sync on storage[{id.upper()}]")
 
     def parse_payload(self) -> dict[str, Any]:
@@ -56,7 +60,8 @@ class SyntheticDevice:
         warnings.append("Device has not come online within 10s, will retry.")
 
         try:
-            self.loop.run_until_complete(self.dd_main())
+            with Progress() as self.progress:
+                self.loop.run_until_complete(self.dd_main())
         except KeyboardInterrupt:
             print("Ok interruption is fine.")
         finally:
@@ -70,5 +75,3 @@ class SyntheticDevice:
         print("Running generate_report")
         warnings: list[str] = []
         warnings.append("The report generation timed out, please retry again after some time")
-
-        return {"warning": warnings}
