@@ -20,8 +20,9 @@ class SyntheticDevice:
 
         tasklist = []
         for device in self.device_list:
-            pbar = self.progress.add_task(f"Processing {device}...", total=100)
-            task = self.loop.create_task(self.update_storage(device, pbar))
+            task = self.loop.create_task(
+                self.update_storage(device, self.progress.add_task(f"Processing {device}...", total=100))
+            )
             tasklist.append(task)
 
         await asyncio.gather(*tasklist)
