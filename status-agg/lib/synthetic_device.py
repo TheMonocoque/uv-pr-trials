@@ -76,3 +76,14 @@ class SyntheticDevice:
         print("Running generate_report")
         warnings: list[str] = []
         warnings.append("The report generation timed out, please retry again after some time")
+
+        # exercise arjancode example of rules to refactor conditions
+        user_example: str | None = None
+        rejection_rules = [
+            lambda: warnings is None,
+            lambda: not user_example and user_example is None,
+        ]
+        if any(rule() for rule in rejection_rules):
+            print("REJECTION RULE: One of the items was rejected")
+
+        return {"warning": warnings}
